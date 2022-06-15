@@ -5,6 +5,12 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.warning
 import org.echoosx.mirai.plugin.command.TwitterScreenshotCommand
+import org.echoosx.mirai.plugin.data.RecordData
+import org.echoosx.mirai.plugin.utils.Subscribe
+import org.quartz.JobBuilder
+import org.quartz.SimpleScheduleBuilder
+import org.quartz.TriggerBuilder
+import org.quartz.impl.StdSchedulerFactory
 import xyz.cssxsh.mirai.selenium.MiraiSeleniumPlugin
 
 object TwitterSS : KotlinPlugin(
@@ -27,9 +33,27 @@ object TwitterSS : KotlinPlugin(
     }
 
     override fun onEnable() {
+
         if(selenium) {
+            FeedConfig.reload()
+            RecordData.reload()
             SeleniumConfig.reload()
             TwitterScreenshotCommand.register()
+
+            val scheduler = StdSchedulerFactory.getDefaultScheduler()
+            val jobDetail = JobBuilder.newJob(Subscribe::class.java)
+                .build()
+            val trigger = TriggerBuilder.newTrigger()
+                .withSchedule(
+                    SimpleScheduleBuilder.simpleSchedule()
+                        .withIntervalInSeconds(60)
+                        .repeatForever()
+                )
+                .startNow()
+                .build()
+
+            scheduler.scheduleJob(jobDetail,trigger)
+            scheduler.start()
         }
     }
 }
