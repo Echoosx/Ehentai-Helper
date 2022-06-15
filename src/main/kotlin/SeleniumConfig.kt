@@ -1,13 +1,10 @@
 package org.echoosx.mirai.plugin
 
-import net.mamoe.mirai.console.data.ReadOnlyPluginConfig
-import net.mamoe.mirai.console.data.ValueDescription
-import net.mamoe.mirai.console.data.ValueName
-import net.mamoe.mirai.console.data.value
+import net.mamoe.mirai.console.data.*
 import xyz.cssxsh.selenium.RemoteWebDriverConfig
 import xyz.cssxsh.selenium.UserAgents
 
-object SeleniumConfig : ReadOnlyPluginConfig("SeleniumConfig"),RemoteWebDriverConfig {
+object SeleniumConfig : AutoSavePluginConfig("SeleniumConfig"),RemoteWebDriverConfig {
     @ValueName("user_agent")
     @ValueDescription("截图UA")
     override val userAgent: String by value(UserAgents.IPAD)
