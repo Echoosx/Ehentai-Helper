@@ -21,7 +21,7 @@ object TwitterSS : KotlinPlugin(
     JvmPluginDescription(
         id = "org.echoosx.mirai.plugin.Twitter-Helper",
         name = "Twitter-helper",
-        version = "0.1.0"
+        version = "1.0.0"
     ) {
         author("Echoosx")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-selenium-plugin", true)

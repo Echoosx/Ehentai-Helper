@@ -16,7 +16,7 @@ import java.lang.Thread.sleep
 internal val logger get() = TwitterSS.logger
 fun screenshotTwitter(twitterLink:String):InputStream{
     val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
-    var filename: String
+    val filename: String
     val twitterRegex = Regex("""https?://twitter.com/.+?/status/(\d+)""")
     if(twitterLink.matches(twitterRegex)){
         filename = twitterRegex.matchEntire(twitterLink)!!.groupValues[1]
