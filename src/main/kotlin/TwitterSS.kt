@@ -4,11 +4,13 @@ import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.warning
+import org.echoosx.mirai.plugin.FeedConfig.during
 import org.echoosx.mirai.plugin.FeedConfig.refresh
 import org.echoosx.mirai.plugin.command.TwitterScreenshotCommand
 import org.echoosx.mirai.plugin.data.RecordData
 import org.echoosx.mirai.plugin.utils.Subscribe
 import org.echoosx.mirai.plugin.utils.getLatestTwitter
+import org.echoosx.mirai.plugin.utils.touchDir
 import org.quartz.JobBuilder
 import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
@@ -41,6 +43,7 @@ object TwitterSS : KotlinPlugin(
             SeleniumConfig.reload()
             TwitterScreenshotCommand.register()
 
+            touchDir("${dataFolderPath}/twitter")
             if(refresh){
                 RecordData.record.forEach{ record->
                     val twitter = getLatestTwitter(record.key)
@@ -53,7 +56,7 @@ object TwitterSS : KotlinPlugin(
             val trigger = TriggerBuilder.newTrigger()
                 .withSchedule(
                     SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInSeconds(60)
+                        .withIntervalInSeconds(during * 60)
                         .repeatForever()
                 )
                 .startNow()

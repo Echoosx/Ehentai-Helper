@@ -16,31 +16,53 @@ import java.lang.Thread.sleep
 internal val logger get() = TwitterSS.logger
 fun screenshotTwitter(twitterLink:String):InputStream{
     val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
+    var filename: String
+    val twitterRegex = Regex("""https?://twitter.com/.+?/status/(\d+)""")
+    if(twitterLink.matches(twitterRegex)){
+        filename = twitterRegex.matchEntire(twitterLink)!!.groupValues[1]
+    }else
+        throw Exception("不是twitter链接")
     try {
         driver.get(twitterLink)
-//        sleep(3_000)
+        sleep(5_000)
         driver.hide(
             "div.css-1dbjc4n.r-aqfbo4.r-1p0dtai.r-1d2f490.r-12vffkv.r-1xcajam.r-zchlnj",
             "div.css-1dbjc4n.r-aqfbo4.r-gtdqiz.r-1gn8etr.r-1g40b8q",
         )
         val article =
             driver.findElement(By.cssSelector("div.css-1dbjc4n.r-14lw9ot.r-jxzhtn.r-1ljd8xs.r-13l2t4g.r-1phboty.r-1jgb5lz.r-11wrixw.r-61z16t.r-1ye8kvj.r-13qz1uu.r-184en5c > div > section > div > div > div:nth-child(1)"))
-        Shutterbug.shootElement(driver, article, CaptureElement.FULL_SCROLL).withName("twitter")
-            .save("$dataFolderPath")
+        Shutterbug.shootElement(driver, article, CaptureElement.FULL_SCROLL).withName(filename)
+            .save("${dataFolderPath}/twitter")
 
 
     } catch (e: NoSuchElementException){
-        print("plus!")
         sleep(5_000)
         val article =
             driver.findElement(By.cssSelector("div.css-1dbjc4n.r-14lw9ot.r-jxzhtn.r-1ljd8xs.r-13l2t4g.r-1phboty.r-1jgb5lz.r-11wrixw.r-61z16t.r-1ye8kvj.r-13qz1uu.r-184en5c > div > section > div > div > div:nth-child(1)"))
-        Shutterbug.shootElement(driver, article, CaptureElement.FULL_SCROLL).withName("twitter")
-            .save("$dataFolderPath")
+        Shutterbug.shootElement(driver, article, CaptureElement.FULL_SCROLL).withName(filename)
+            .save("${dataFolderPath}/twitter")
 
-    } catch (e:Throwable){
-        logger.error(e)
     } finally {
         driver.quit()
     }
-    return File("$dataFolderPath/twitter.png").inputStream()
+    return File("${dataFolderPath}/twitter/${filename}.png").inputStream()
+}
+
+
+fun touchDir(dirPath: String): Boolean {
+    var destDirName = dirPath
+    val dir = File(destDirName)
+    if (dir.exists()) {
+        return false
+    }
+    if (!destDirName.endsWith(File.separator)) {
+        destDirName += File.separator
+    }
+    //创建目录
+    return if (dir.mkdirs()) {
+        true
+    } else {
+        logger.error("创建目录" + destDirName + "失败！")
+        false
+    }
 }

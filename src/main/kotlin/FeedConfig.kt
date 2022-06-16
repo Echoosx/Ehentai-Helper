@@ -19,4 +19,7 @@ object FeedConfig:ReadOnlyPluginConfig("feed") {
 
     @ValueDescription("每次启动时是否刷新record（选择是则bot关闭时的更新丢弃）")
     val refresh:Boolean by value(true)
+
+    @ValueDescription("每次轮询间隔")
+    val during:Int by value(1)
 }

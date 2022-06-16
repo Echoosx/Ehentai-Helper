@@ -21,7 +21,7 @@ dependencies{
     implementation("org.jsoup:jsoup:1.14.3")
     implementation("com.assertthat:selenium-shutterbug:1.6")
     implementation("org.quartz-scheduler:quartz:2.3.2")
-    compileOnly("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.0")
-    testImplementation("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.0")
+    compileOnly("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.1")
+    testImplementation("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.1")
     testImplementation(kotlin("test"))
 }
