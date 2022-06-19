@@ -22,4 +22,7 @@ object FeedConfig:ReadOnlyPluginConfig("feed") {
 
     @ValueDescription("每次轮询间隔（min）")
     val during:Int by value(1)
+
+    @ValueDescription("twitter cookie auth_token")
+    val authToken:String by value()
 }

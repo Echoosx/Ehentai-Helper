@@ -4,10 +4,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import org.echoosx.mirai.plugin.SeleniumConfig
 import org.echoosx.mirai.plugin.TwitterSS
 import org.echoosx.mirai.plugin.utils.screenshotTwitter
+import xyz.cssxsh.mirai.selenium.MiraiSeleniumPlugin
 
 object TwitterScreenshotCommand:SimpleCommand(
     TwitterSS,
@@ -16,15 +19,14 @@ object TwitterScreenshotCommand:SimpleCommand(
     private val logger get() = TwitterSS.logger
     @Suppress("unused")
     @Handler
-    suspend fun CommandSender.handle(url: String) {
+    suspend fun CommandSender.handle(url: String,contact: Contact = subject as Contact) {
         try {
-            sendMessage("正在获取推特内容...")
-
-            val resource = screenshotTwitter(url).toExternalResource()
-            subject?.sendImage(resource)
-            withContext(Dispatchers.IO) {
-                resource.close()
-            }
+            subject?.sendMessage("正在获取推特内容...")
+            val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
+            val resource = screenshotTwitter(driver,url).toExternalResource()
+            contact.sendImage(resource)
+            withContext(Dispatchers.IO) { resource.close() }
+            driver.quit()
         }catch (e:Throwable){
             sendMessage("获取失败")
             logger.error(e)

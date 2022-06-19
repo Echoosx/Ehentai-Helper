@@ -16,12 +16,12 @@ repositories {
 }
 
 dependencies{
-    implementation("dom4j:dom4j:1.6.1")
-    implementation("jaxen:jaxen:1.2.0")
-    implementation("org.jsoup:jsoup:1.14.3")
+//    implementation("dom4j:dom4j:1.6.1")
+//    implementation("jaxen:jaxen:1.2.0")
+//    implementation("org.jsoup:jsoup:1.14.3")
     implementation("com.assertthat:selenium-shutterbug:1.6")
     implementation("org.quartz-scheduler:quartz:2.3.2")
-    compileOnly("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.1")
-    testImplementation("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.1")
+    compileOnly("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.0")
+    testImplementation("xyz.cssxsh.mirai:mirai-selenium-plugin:2.1.0")
     testImplementation(kotlin("test"))
 }

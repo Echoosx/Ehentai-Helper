@@ -1,19 +1,71 @@
 package org.echoosx.mirai.plugin.utils
 
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.dom4j.io.SAXReader
-import org.echoosx.mirai.plugin.FeedConfig.host
-import org.echoosx.mirai.plugin.FeedConfig.port
-import org.echoosx.mirai.plugin.FeedConfig.rsshub
-import org.echoosx.mirai.plugin.FeedConfig.timeout
 import org.echoosx.mirai.plugin.data.RecordData
-import org.xml.sax.InputSource
-import java.io.StringReader
-import java.net.InetSocketAddress
-import java.net.Proxy
-import java.util.concurrent.TimeUnit
+import org.openqa.selenium.By
+import org.openqa.selenium.NoSuchElementException
+import org.openqa.selenium.remote.RemoteWebDriver
+import java.lang.Thread.sleep
 
+
+fun getLatestTwitterLink(driver: RemoteWebDriver,url:String):String{
+    try {
+//        driver.get(url)
+//        val cookies = listOf(
+//            Pair("night_mode","0"),
+//            Pair("auth_token", authToken),
+//            Pair("lang","ja"),
+//        )
+//        for(cookie in cookies){
+//            driver.manage().addCookie(Cookie(cookie.first,cookie.second))
+//        }
+        driver.get(url)
+        sleep(3_000)
+
+        val a = driver.findElement(By.cssSelector(
+            "a.css-4rbku5.css-18t94o4.css-901oao.r-1loqt21.r-1q142lx.r-a023e6.r-16dba41.r-rjixqe.r-bcqeeo.r-3s2u2q.r-qvutc0"
+        ))
+        return a.getAttribute("href")
+    }catch (e:NoSuchElementException){
+        sleep(5_000)
+        val a = driver.findElement(By.cssSelector(
+            "a.css-4rbku5.css-18t94o4.css-901oao.r-1loqt21.r-1q142lx.r-a023e6.r-16dba41.r-rjixqe.r-bcqeeo.r-3s2u2q.r-qvutc0"
+        ))
+        return a.getAttribute("href")
+    }
+}
+
+
+fun checkUpdate(driver:RemoteWebDriver,channelId: String):String?{
+    val link = getLatestTwitterLink(driver,"https://twitter.com/$channelId/media")
+    return if(link != RecordData.record[channelId]?.latest && link != RecordData.record[channelId]?.pre)
+        link
+    else
+        null
+}
+
+// Http Get方法
+//internal fun connectHttpGet(url: String) :String {
+//    var tempString = ""
+//    val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
+//    val client = OkHttpClient().newBuilder()
+//        .connectTimeout(timeout, TimeUnit.SECONDS)
+//        .proxy(proxy)
+//        .build()
+//
+//    val request = Request.Builder()
+//        .url(url)
+//        .get()
+//        .cacheControl(CacheControl.Builder().noStore().build())
+//        .build()
+//    //同步处理
+//    val call = client.newCall(request)
+//    val response = call.execute()
+//    tempString = response.body?.string().toString()
+//
+//    return tempString
+//}
+
+/* 弃用rsshub监测
 class Twitter{
     var author:String? = null
     var title:String? = null
@@ -22,9 +74,9 @@ class Twitter{
     var link:String? = null
 }
 
-fun getLatestTwitter(channelId:String):Twitter{
+fun getLatestTwitter(channelId:String,debug:Boolean = false):Twitter{
     val xml:String = connectHttpGet("https://${rsshub}/twitter/media/${channelId}")
-
+    if(debug){ logger.info(xml) }
     val xmlMap = HashMap<String,String>()
     xmlMap["atom"] = "http://www.w3.org/2005/Atom"
 
@@ -43,29 +95,10 @@ fun getLatestTwitter(channelId:String):Twitter{
 
 fun checkUpdate(channelId: String):Twitter?{
     val twitter = getLatestTwitter(channelId)
+    logger.info("$channelId latest:${twitter.link}")
     return if(twitter.link != RecordData.record[channelId]?.latest && twitter.link != RecordData.record[channelId]?.pre)
         twitter
     else
         null
 }
-
-// Http Get方法
-internal fun connectHttpGet(url: String) :String {
-    var tempString = ""
-    val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-    val client = OkHttpClient().newBuilder()
-        .connectTimeout(timeout, TimeUnit.SECONDS)
-        .proxy(proxy)
-        .build()
-
-    val request = Request.Builder()
-        .url(url)
-        .get()
-        .build()
-    //同步处理
-    val call = client.newCall(request)
-    val response = call.execute()
-    tempString = response.body?.string().toString()
-
-    return tempString
-}
+*/
