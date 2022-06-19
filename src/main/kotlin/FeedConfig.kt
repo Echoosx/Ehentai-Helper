@@ -5,23 +5,11 @@ import net.mamoe.mirai.console.data.ValueDescription
 import net.mamoe.mirai.console.data.value
 
 object FeedConfig:ReadOnlyPluginConfig("feed") {
-    @ValueDescription("代理ip")
-    val host:String by value("127.0.0.1")
-
-    @ValueDescription("代理端口")
-    val port:Int by value(7890)
-
-    @ValueDescription("请求超时时间（s）")
-    val timeout:Long by value(30L)
-
-    @ValueDescription("RssHub服务器")
-    val rsshub:String by value("rsshub.app")
-
-    @ValueDescription("每次启动时是否刷新record（选择是则bot关闭时的更新丢弃）")
-    val refresh:Boolean by value(true)
+    @ValueDescription("开机自动刷新记录")
+    val refresh:Boolean by value(false)
 
     @ValueDescription("每次轮询间隔（min）")
-    val during:Int by value(1)
+    val during:Int by value(2)
 
     @ValueDescription("twitter cookie auth_token")
     val authToken:String by value()

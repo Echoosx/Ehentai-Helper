@@ -2,11 +2,14 @@ package org.echoosx.mirai.plugin.utils
 
 import com.assertthat.selenium_shutterbug.core.CaptureElement
 import com.assertthat.selenium_shutterbug.core.Shutterbug
+import org.echoosx.mirai.plugin.FeedConfig.authToken
+import org.echoosx.mirai.plugin.SeleniumConfig
 import org.echoosx.mirai.plugin.TwitterSS
 import org.echoosx.mirai.plugin.TwitterSS.dataFolderPath
 import org.openqa.selenium.By
+import org.openqa.selenium.Cookie
 import org.openqa.selenium.NoSuchElementException
-import org.openqa.selenium.remote.RemoteWebDriver
+import xyz.cssxsh.mirai.selenium.MiraiSeleniumPlugin
 import xyz.cssxsh.selenium.hide
 import java.io.File
 import java.io.InputStream
@@ -14,7 +17,8 @@ import java.lang.Thread.sleep
 
 internal val logger get() = TwitterSS.logger
 
-fun screenshotTwitter(driver:RemoteWebDriver,twitterLink:String):InputStream{
+fun screenshotTwitter(twitterLink:String):InputStream{
+    val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
     val filename: String
     val twitterRegex = Regex("""https?://(mobile.)?twitter.com/.+?/status/(\d+)""")
     if(twitterLink.matches(twitterRegex)){
@@ -23,15 +27,15 @@ fun screenshotTwitter(driver:RemoteWebDriver,twitterLink:String):InputStream{
         throw Exception("不是twitter链接")
     try {
         driver.get(twitterLink)
-//        val cookies = listOf(
-//            Pair("night_mode","0"),
-//            Pair("auth_token", authToken),
-//            Pair("lang","ja"),
-//        )
-//        for(cookie in cookies){
-//            driver.manage().addCookie(Cookie(cookie.first,cookie.second))
-//        }
-//        driver.get(twitterLink)
+        val cookies = listOf(
+            Pair("night_mode","0"),
+            Pair("auth_token", authToken),
+            Pair("lang","ja"),
+        )
+        for(cookie in cookies){
+            driver.manage().addCookie(Cookie(cookie.first,cookie.second))
+        }
+        driver.get(twitterLink)
         sleep(5_000)
         driver.hide(
             "div.css-1dbjc4n.r-aqfbo4.r-1p0dtai.r-1d2f490.r-12vffkv.r-1xcajam.r-zchlnj",
@@ -50,6 +54,8 @@ fun screenshotTwitter(driver:RemoteWebDriver,twitterLink:String):InputStream{
         val article = driver.findElement(By.cssSelector("article"))
         Shutterbug.shootElement(driver, article, CaptureElement.FULL_SCROLL).withName(filename)
             .save("${dataFolderPath}/twitter")
+    }finally {
+        driver.quit()
     }
     return File("${dataFolderPath}/twitter/${filename}.png").inputStream()
 }

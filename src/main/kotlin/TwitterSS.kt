@@ -5,9 +5,11 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.warning
 import org.echoosx.mirai.plugin.FeedConfig.during
+import org.echoosx.mirai.plugin.FeedConfig.refresh
 import org.echoosx.mirai.plugin.command.TwitterScreenshotCommand
 import org.echoosx.mirai.plugin.data.RecordData
 import org.echoosx.mirai.plugin.utils.Subscribe
+import org.echoosx.mirai.plugin.utils.getLatestTwitterLink
 import org.echoosx.mirai.plugin.utils.touchDir
 import org.quartz.JobBuilder
 import org.quartz.SimpleScheduleBuilder
@@ -43,13 +45,12 @@ object TwitterSS : KotlinPlugin(
 
             touchDir("${dataFolderPath}/twitter")
 
-//            val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
-//            if(refresh){
-//                RecordData.record.forEach{ record->
-//                    val link = getLatestTwitterLink(driver,record.key)
-//                    record.value.latest = link
-//                }
-//            }
+            if(refresh){
+                RecordData.record.forEach{ record->
+                    val link = getLatestTwitterLink(record.key)
+                    record.value.latest = link
+                }
+            }
             val scheduler = StdSchedulerFactory.getDefaultScheduler()
             val jobDetail = JobBuilder.newJob(Subscribe::class.java)
                 .build()

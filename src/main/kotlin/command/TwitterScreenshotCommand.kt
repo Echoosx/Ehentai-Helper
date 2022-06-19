@@ -23,7 +23,7 @@ object TwitterScreenshotCommand:SimpleCommand(
         try {
             subject?.sendMessage("正在获取推特内容...")
             val driver = MiraiSeleniumPlugin.driver(config = SeleniumConfig)
-            val resource = screenshotTwitter(driver,url).toExternalResource()
+            val resource = screenshotTwitter(url).toExternalResource()
             contact.sendImage(resource)
             withContext(Dispatchers.IO) { resource.close() }
             driver.quit()
