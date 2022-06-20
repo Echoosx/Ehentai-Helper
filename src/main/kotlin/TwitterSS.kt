@@ -4,6 +4,7 @@ import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.warning
+import org.echoosx.mirai.plugin.FeedConfig.authToken
 import org.echoosx.mirai.plugin.FeedConfig.lazyPoll
 import org.echoosx.mirai.plugin.FeedConfig.poll
 import org.echoosx.mirai.plugin.FeedConfig.refresh
@@ -40,6 +41,10 @@ object TwitterSS : KotlinPlugin(
     override fun onEnable() {
         if(selenium) {
             FeedConfig.reload()
+            if(authToken.isBlank()){
+                logger.warning("未填写cookie，功能不能正常运行！")
+                return
+            }
             RecordData.reload()
             SeleniumConfig.reload()
             TwitterScreenshotCommand.register()
