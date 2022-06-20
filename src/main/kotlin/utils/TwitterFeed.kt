@@ -24,7 +24,6 @@ fun getLatestTwitterLink(url:String):String{
         }
         driver.get(url)
         sleep(3_000)
-
         val a = driver.findElement(By.cssSelector(
             "a.css-4rbku5.css-18t94o4.css-901oao.r-1loqt21.r-1q142lx.r-a023e6.r-16dba41.r-rjixqe.r-bcqeeo.r-3s2u2q.r-qvutc0"
         ))
@@ -48,63 +47,3 @@ fun checkUpdate(channelId: String):String?{
     else
         null
 }
-
-// Http Get方法
-//internal fun connectHttpGet(url: String) :String {
-//    var tempString = ""
-//    val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-//    val client = OkHttpClient().newBuilder()
-//        .connectTimeout(timeout, TimeUnit.SECONDS)
-//        .proxy(proxy)
-//        .build()
-//
-//    val request = Request.Builder()
-//        .url(url)
-//        .get()
-//        .cacheControl(CacheControl.Builder().noStore().build())
-//        .build()
-//    //同步处理
-//    val call = client.newCall(request)
-//    val response = call.execute()
-//    tempString = response.body?.string().toString()
-//
-//    return tempString
-//}
-
-/* 弃用rsshub监测
-class Twitter{
-    var author:String? = null
-    var title:String? = null
-    var description:String? = null
-    var pubDate:String? = null
-    var link:String? = null
-}
-
-fun getLatestTwitter(channelId:String,debug:Boolean = false):Twitter{
-    val xml:String = connectHttpGet("https://${rsshub}/twitter/media/${channelId}")
-    if(debug){ logger.info(xml) }
-    val xmlMap = HashMap<String,String>()
-    xmlMap["atom"] = "http://www.w3.org/2005/Atom"
-
-    val reader = SAXReader()
-    reader.documentFactory.xPathNamespaceURIs = xmlMap
-    val document = reader.read(InputSource(StringReader(xml)))
-    val twitter = Twitter()
-    twitter.author = document.selectSingleNode("//item/author").text
-    twitter.title = document.selectSingleNode("//item/title").text
-    twitter.description = document.selectSingleNode("//item/description").text
-    twitter.pubDate = document.selectSingleNode("//item/pubDate").text
-    twitter.link = document.selectSingleNode("//item/link").text
-
-    return twitter
-}
-
-fun checkUpdate(channelId: String):Twitter?{
-    val twitter = getLatestTwitter(channelId)
-    logger.info("$channelId latest:${twitter.link}")
-    return if(twitter.link != RecordData.record[channelId]?.latest && twitter.link != RecordData.record[channelId]?.pre)
-        twitter
-    else
-        null
-}
-*/

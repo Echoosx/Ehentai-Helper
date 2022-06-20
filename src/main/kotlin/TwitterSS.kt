@@ -4,15 +4,16 @@ import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.warning
-import org.echoosx.mirai.plugin.FeedConfig.during
+import org.echoosx.mirai.plugin.FeedConfig.lazyPoll
+import org.echoosx.mirai.plugin.FeedConfig.poll
 import org.echoosx.mirai.plugin.FeedConfig.refresh
 import org.echoosx.mirai.plugin.command.TwitterScreenshotCommand
 import org.echoosx.mirai.plugin.data.RecordData
 import org.echoosx.mirai.plugin.utils.Subscribe
 import org.echoosx.mirai.plugin.utils.getLatestTwitterLink
 import org.echoosx.mirai.plugin.utils.touchDir
+import org.quartz.CronScheduleBuilder
 import org.quartz.JobBuilder
-import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import xyz.cssxsh.mirai.selenium.MiraiSeleniumPlugin
@@ -51,19 +52,32 @@ object TwitterSS : KotlinPlugin(
                     record.value.latest = link
                 }
             }
+
             val scheduler = StdSchedulerFactory.getDefaultScheduler()
             val jobDetail = JobBuilder.newJob(Subscribe::class.java)
+                .withIdentity("subscribe","group1")
+                .storeDurably(true)
                 .build()
+            scheduler.addJob(jobDetail,false)
+
             val trigger = TriggerBuilder.newTrigger()
+                .withIdentity("poll","group1")
                 .withSchedule(
-                    SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInSeconds(during * 60)
-                        .repeatForever()
+                    CronScheduleBuilder.cronSchedule(poll)
                 )
-                .startNow()
+                .forJob(jobDetail)
                 .build()
 
-            scheduler.scheduleJob(jobDetail,trigger)
+            val lazyTrigger = TriggerBuilder.newTrigger()
+                .withIdentity("lazy","group1")
+                .withSchedule(
+                    CronScheduleBuilder.cronSchedule(lazyPoll)
+                )
+                .forJob(jobDetail)
+                .build()
+
+            scheduler.scheduleJob(trigger)
+            scheduler.scheduleJob(lazyTrigger)
             scheduler.start()
         }
     }
